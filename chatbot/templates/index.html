@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e2f;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .message {
+      margin: 10px 0;
+      padding: 12px 18px;
+      border-radius: 20px;
+      max-width: 70%;
+    }
+    .user {
+      align-self: flex-end;
+      background-color: #4e8cff;
+    }
+    .bot {
+      align-self: flex-start;
+      background-color: #2d2d44;
+    }
+    .input-container {
+      display: flex;
+      padding: 15px;
+      background: #2c2c3e;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 25px;
+      border: none;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button {
+      background: #4e8cff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container" id="chatbox"></div>
+  <div class="input-container">
+    <input type="text" id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value;
+      if (!message.trim()) return;
+
+      appendMessage(message, 'user');
+      input.value = '';
+
+      const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      appendMessage(data.reply, 'bot');
+    }
+
+    function appendMessage(text, sender) {
+      const chatbox = document.getElementById('chatbox');
+      const msg = document.createElement('div');
+      msg.className = 'message ' + sender;
+      msg.textContent = text;
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
